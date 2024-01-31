@@ -1,16 +1,15 @@
 package com.example.demo.implementation.service;
 
+import static com.example.demo.testutils.TaskUtils.createDependentTask;
+import static com.example.demo.testutils.TaskUtils.createIndependentTask;
+
 import com.example.demo.job.exceptions.TaskSortException;
 import com.example.demo.job.implementation.service.TaskExecutionOrderServiceImpl;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
-
-import static com.example.demo.testutils.TaskUtils.createDependentTask;
-import static com.example.demo.testutils.TaskUtils.createIndependentTask;
 
 @SpringBootTest
 public class TaskBuilderServiceTest {
