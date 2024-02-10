@@ -1,11 +1,9 @@
 package com.example.demo.job.implementation.service;
 
 import com.example.demo.job.exceptions.TaskSortException;
-import com.example.demo.job.model.Task;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.demo.job.interfaces.service.TaskExecutionOrderService;
+import com.example.demo.job.model.Task;
+import java.util.*;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
@@ -56,46 +54,43 @@ public class TaskExecutionOrderServiceImpl implements TaskExecutionOrderService 
   }
 
   private void createIndependentEdges(Graph<Task, DefaultEdge> graph, List<Task> tasks) {
-    var previous =
-        tasks.stream()
-            .filter(task1 -> task1.getRequires().isEmpty())
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new TaskSortException(
-                        "No start task found! Include at least one task without a "
-                            + "dependent task."));
-
-    var independentTasks =
-        tasks.stream().filter(task -> task.getRequires().isEmpty()).skip(1).toList();
-
-    for (var task : independentTasks) {
-      graph.addEdge(previous, task);
-      previous = task;
+    Task previous = null;
+    for (Task task : tasks) {
+      if (task.getRequires().isEmpty()) {
+        if (previous != null) {
+          graph.addEdge(previous, task);
+        }
+        previous = task;
+      }
+    }
+    if (previous == null) {
+      throw new TaskSortException(
+          "No start task provided. Include at least one start task  without a dependent task.");
     }
   }
 
   private void createDependentEdges(Graph<Task, DefaultEdge> graph, List<Task> tasks) {
-    tasks.stream()
-        .filter(task -> !task.getRequires().isEmpty())
-        .forEach(
-            task -> {
-              for (var dependentTask : task.getRequires()) {
-                Task requiredTask = findTaskByName(graph, dependentTask);
-                graph.addEdge(requiredTask, task);
-              }
-            });
+    Map<String, Task> taskMap = new HashMap<>();
+    for (var task : tasks) {
+      taskMap.put(task.getName(), task);
+    }
+
+    tasks.forEach(
+        task -> {
+          if (!task.getRequires().isEmpty()) {
+            for (var dependentTask : task.getRequires()) {
+              Task requiredTask = findTaskByName(taskMap, dependentTask);
+              graph.addEdge(requiredTask, task);
+            }
+          }
+        });
   }
 
-  private Task findTaskByName(Graph<Task, DefaultEdge> graph, String taskName) {
-    return graph.vertexSet().stream()
-        .filter(task -> task.getName().equals(taskName))
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new TaskSortException(
-                    "Task dependency on a task with name: "
-                        + taskName
-                        + " not found. Include missing task."));
+  private Task findTaskByName(Map<String, Task> taskMap, String taskName) {
+    if (taskMap.containsKey(taskName)) {
+      return taskMap.get(taskName);
+    } else {
+      throw new TaskSortException("Task " + taskName + " not found. Include missing task.");
+    }
   }
 }

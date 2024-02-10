@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 public class Job {
 
   private List<Task> tasks;
-
 }
