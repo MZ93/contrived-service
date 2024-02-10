@@ -31,7 +31,7 @@ public class JobController {
   }
 
   @ExceptionHandler(TaskSortException.class)
-  public ResponseEntity<String> handleTaskSorting(TaskSortException exception) {
+  public ResponseEntity<String> handleTaskSortException(TaskSortException exception) {
     return ResponseEntity.status(exception.getHttpStatusCode()).body(exception.getMessage());
   }
 }

@@ -3,6 +3,7 @@ package com.example.demo.implementation.service;
 import static com.example.demo.testutils.TaskUtils.createDependentTask;
 import static com.example.demo.testutils.TaskUtils.createIndependentTask;
 
+import com.example.demo.job.exceptions.TaskSortException;
 import com.example.demo.job.implementation.service.TaskExecutionOrderServiceImpl;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +37,7 @@ public class TaskBuilderServiceTest {
   @Test
   public void testEmptyList() {
     Assertions.assertThrows(
-        Exception.class, () -> taskBuilderService.getTasksInExecutionOrder(List.of()));
+        TaskSortException.class, () -> taskBuilderService.getTasksInExecutionOrder(List.of()));
   }
 
   @Test
@@ -56,7 +57,7 @@ public class TaskBuilderServiceTest {
     var dependentTask = createDependentTask("task2", "notPresent");
 
     Assertions.assertThrows(
-        Exception.class,
+        TaskSortException.class,
         () -> taskBuilderService.getTasksInExecutionOrder(List.of(initialTask, dependentTask)));
   }
 
@@ -82,7 +83,7 @@ public class TaskBuilderServiceTest {
     var task3 = createDependentTask("task3", "task2");
 
     Assertions.assertThrows(
-        Exception.class,
+        TaskSortException.class,
         () -> taskBuilderService.getTasksInExecutionOrder(List.of(task1, task2, task3)));
   }
 

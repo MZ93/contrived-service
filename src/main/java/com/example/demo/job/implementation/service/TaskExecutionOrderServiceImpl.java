@@ -3,11 +3,13 @@ package com.example.demo.job.implementation.service;
 import com.example.demo.job.exceptions.TaskSortException;
 import com.example.demo.job.interfaces.service.TaskExecutionOrderService;
 import com.example.demo.job.model.Task;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
-import org.jgrapht.graph.GraphCycleProhibitedException;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +48,7 @@ public class TaskExecutionOrderServiceImpl implements TaskExecutionOrderService 
     try {
       createIndependentEdges(graph, tasks);
       createDependentEdges(graph, tasks);
-    } catch (GraphCycleProhibitedException e) {
+    } catch (IllegalArgumentException e) {
       throw new TaskSortException(
           "Cycle in your tasks, job can't complete. Reorder tasks and remove cyclic "
               + "task dependency");

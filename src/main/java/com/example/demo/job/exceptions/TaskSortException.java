@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatusCode;
 
 public class TaskSortException extends RuntimeException {
 
-  @Getter private HttpStatusCode httpStatusCode;
-  private String exceptionReason;
+  @Getter private final HttpStatusCode httpStatusCode;
+  private final String exceptionReason;
 
   public TaskSortException(String exceptionReason) {
     this.exceptionReason = exceptionReason;
